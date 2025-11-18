@@ -1,0 +1,80 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Arena Verdadeiro ou Falso";
+}
+
+<nav class="top-nav">
+    <a href="/" class="nav-link active">🎮 Quiz</a>
+    <a href="/AskBot" class="nav-link">🤖 Pergunte ao Bot</a>
+</nav>
+
+<header class="quiz-header">
+    <h1>ARENA VERDADEIRO OU FALSO!</h1>
+    <p>Teste Seu Conhecimento! Derrote o Bot!</p>
+</header>
+
+<main class="chatbot-container">
+    <div class="window-header">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="close-btn">×</span>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+        <!-- Mensagens serão adicionadas dinamicamente -->
+        <div class="message bot-message">
+            <div class="bot-icon">
+                <div class="bot-face">
+                    <div class="bot-eyes">
+                        <span class="eye"></span>
+                        <span class="eye"></span>
+                    </div>
+                    <div class="bot-mouth"></div>
+                </div>
+            </div>
+            <div class="message-bubble">
+                <p>Bem-vindo! Pronto para o desafio? Sua primeira pergunta: "A Torre Eiffel fica em Roma." Verdadeiro ou Falso?</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="answer-buttons" id="answerButtons">
+        <button class="btn true-btn" onclick="submitAnswer(true)">
+            <span class="check-icon">✓</span> VERDADEIRO
+        </button>
+        <button class="btn false-btn" onclick="submitAnswer(false)">
+            <span class="cross-icon">×</span> FALSO
+        </button>
+    </div>
+
+    <div class="footer-area">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-label">💰 Pontos</span>
+                <span class="stat-value" id="scoreValue">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">✅ Acertos</span>
+                <span class="stat-value" id="accuracyValue">0/0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">🔥 Combo</span>
+                <span class="stat-value" id="streakValue">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">⚡ Mult.</span>
+                <span class="stat-value" id="multiplierValue">1.0x</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">⏱️ Tempo</span>
+                <span class="stat-value" id="timerValue">0:00</span>
+            </div>
+            <div class="stat-item stat-level">
+                <span class="stat-label">🏆 Nível</span>
+                <span class="stat-value" id="levelValue">🌱 Iniciante</span>
+            </div>
+        </div>
+    </div>
+</main>

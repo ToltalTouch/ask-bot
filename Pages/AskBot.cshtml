@@ -1,0 +1,426 @@
+@page
+@model AskBotModel
+@{
+    ViewData["Title"] = "Pergunte ao Bot";
+}
+
+<nav class="top-nav">
+    <a href="/" class="nav-link">🎮 Quiz</a>
+    <a href="/AskBot" class="nav-link active">🤖 Pergunte ao Bot</a>
+</nav>
+
+<!-- Anti-forgery token para POST requests -->
+@Html.AntiForgeryToken()
+
+<header class="quiz-header">
+    <h1>🤖 PERGUNTE AO BOT!</h1>
+    <p>Faça uma afirmação e o bot dirá se é verdadeiro ou falso!</p>
+</header>
+
+<main class="chatbot-container">
+    <div class="window-header">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <a href="/" class="close-btn" title="Voltar ao Quiz">←</a>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+        <div class="message bot-message">
+            <div class="bot-icon">
+                <div class="bot-face">
+                    <div class="bot-eyes">
+                        <span class="eye"></span>
+                        <span class="eye"></span>
+                    </div>
+                    <div class="bot-mouth"></div>
+                </div>
+            </div>
+            <div class="message-bubble">
+                <p>Olá! Faça uma afirmação histórica e eu direi se é verdadeira ou falsa! 🧠</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-area">
+        <div class="input-area-askbot">
+            <input type="text" id="userQuestion" placeholder="Ex: A Torre Eiffel fica em Paris" autofocus>
+            <button class="send-btn" id="askButton" onclick="askBot()">
+                <span id="buttonText">Perguntar</span>
+                <span id="buttonSpinner" style="display: none;">⏳</span>
+            </button>
+        </div>
+        <div class="examples">
+            <small>💡 Exemplos: "A Terra é redonda", "Os vikings usavam capacetes com chifres"</small>
+        </div>
+    </div>
+</main>
+
+<style>
+    .input-area-askbot {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .input-area-askbot input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid #4a5568;
+        border-radius: 25px;
+        background: #3a4664;
+        color: white;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .input-area-askbot input:focus {
+        border-color: #667eea;
+    }
+
+    .input-area-askbot input::placeholder {
+        color: #8892a6;
+    }
+
+    .examples {
+        text-align: center;
+        color: #8892a6;
+        margin-top: 0.5rem;
+    }
+
+    /* Feedback Styles */
+    .feedback-container {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .feedback-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .feedback-question {
+        color: white;
+        font-size: 0.95rem;
+        margin: 0 0 0.5rem 0;
+        font-weight: 500;
+    }
+
+    .feedback-btn {
+        padding: 0.6rem 1.5rem;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        min-width: 120px;
+    }
+
+    .feedback-btn.useful {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+    }
+
+    .feedback-btn.useful:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(56, 239, 125, 0.4);
+    }
+
+    .feedback-btn.not-useful {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        color: white;
+    }
+
+    .feedback-btn.not-useful:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(235, 51, 73, 0.4);
+    }
+
+    .feedback-thanks {
+        text-align: center;
+        color: #38ef7d;
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 0.5rem;
+    }
+
+    /* Notification Animations */
+    @@keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+</style>
+
+<script>
+    let lastResponse = null; // Armazenar última resposta para feedback
+
+    async function askBot() {
+        const input = document.getElementById('userQuestion');
+        const question = input.value.trim();
+        
+        if (!question) {
+            alert('Por favor, digite uma afirmação!');
+            return;
+        }
+
+        // Desabilitar input e mostrar loading
+        input.disabled = true;
+        const askButton = document.getElementById('askButton');
+        askButton.disabled = true;
+        document.getElementById('buttonText').style.display = 'none';
+        document.getElementById('buttonSpinner').style.display = 'inline';
+
+        // Adicionar mensagem do usuário
+        addUserMessage(question);
+        
+        // Limpar input
+        input.value = '';
+
+        try {
+            // Fazer requisição ao backend
+            const response = await fetch(`/AskBot?handler=Ask&question=${encodeURIComponent(question)}`);
+            const data = await response.json();
+
+            // Armazenar resposta para feedback
+            lastResponse = data;
+
+            setTimeout(() => {
+                if (data.error) {
+                    addBotMessage('❌ Ops! Ocorreu um erro: ' + data.error);
+                } else {
+                    // Mostrar resposta
+                    const answerIcon = data.answer ? '✅' : '❌';
+                    const answerText = data.answer ? 'VERDADEIRO' : 'FALSO';
+                    const confidenceText = data.confidence ? ` (${Math.round(data.confidence * 100)}% de confiança)` : '';
+                    
+                    addBotMessage(`${answerIcon} ${answerText}${confidenceText}`);
+                    
+                    // Mostrar curiosidade se houver
+                    if (data.curiosity) {
+                        setTimeout(() => {
+                            addBotMessage('💡 ' + data.curiosity);
+                        }, 800);
+                    }
+                    
+                    // Mostrar fonte se foi do dataset
+                    if (data.source === 'dataset') {
+                        setTimeout(() => {
+                            addBotMessage('📚 Esta resposta foi encontrada no meu banco de conhecimento histórico!');
+                        }, data.curiosity ? 1600 : 800);
+                    } else if (data.source === 'ml') {
+                        setTimeout(() => {
+                            addBotMessage('🤖 Usei minha inteligência artificial para responder essa! Posso não estar 100% correto.');
+                        }, data.curiosity ? 1600 : 800);
+                    }
+
+                    // Adicionar botões de feedback
+                    setTimeout(() => {
+                        addFeedbackButtons();
+                    }, data.curiosity ? 2400 : 1600);
+                }
+            }, 500);
+
+        } catch (error) {
+            console.error('Erro:', error);
+            addBotMessage('❌ Erro ao processar sua pergunta. Tente novamente!');
+        } finally {
+            // Reabilitar input
+            setTimeout(() => {
+                input.disabled = false;
+                askButton.disabled = false;
+                document.getElementById('buttonText').style.display = 'inline';
+                document.getElementById('buttonSpinner').style.display = 'none';
+                input.focus();
+            }, 1000);
+        }
+    }
+
+    function addFeedbackButtons() {
+        const chatArea = document.getElementById('chatArea');
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'feedback-container';
+        feedbackDiv.innerHTML = `
+            <div class="feedback-buttons">
+                <p class="feedback-question">Esta resposta foi útil?</p>
+                <button class="feedback-btn useful" onclick="sendFeedback(true)">
+                    👍 Útil
+                </button>
+                <button class="feedback-btn not-useful" onclick="sendFeedback(false)">
+                    👎 Não útil
+                </button>
+            </div>
+        `;
+        chatArea.appendChild(feedbackDiv);
+        scrollToBottom();
+    }
+
+    async function sendFeedback(isUseful) {
+        if (!lastResponse) {
+            console.error('Nenhuma resposta para dar feedback');
+            return;
+        }
+
+        // Desabilitar botões imediatamente
+        const feedbackButtons = document.querySelectorAll('.feedback-btn');
+        feedbackButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+        });
+
+        try {
+            // Pegar o último texto da mensagem do usuário
+            const userMessages = document.querySelectorAll('.user-message .message-bubble p');
+            const lastQuestion = userMessages[userMessages.length - 1]?.textContent || '';
+
+            const feedbackData = {
+                timestamp: lastResponse.timestamp || new Date().toISOString(),
+                question: lastQuestion,
+                answer: lastResponse.answer,
+                curiosity: lastResponse.curiosity,
+                confidence: lastResponse.confidence,
+                source: lastResponse.source,
+                isUseful: isUseful,
+                comment: ''
+            };
+
+            console.log('Enviando feedback:', feedbackData);
+
+            const response = await fetch('/AskBot?handler=Feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                },
+                body: JSON.stringify(feedbackData)
+            });
+
+            const result = await response.json();
+            console.log('Resposta do servidor:', result);
+
+            if (response.ok && result.success) {
+                // Remover botões e mostrar agradecimento
+                const feedbackContainer = document.querySelector('.feedback-container');
+                if (feedbackContainer) {
+                    feedbackContainer.innerHTML = `
+                        <div class="feedback-thanks">
+                            ${isUseful ? '✅ Obrigado pelo feedback positivo! 😊' : '📝 Obrigado! Vamos trabalhar para melhorar!'}
+                        </div>
+                    `;
+                }
+                
+                // Mostrar notificação
+                showNotification(isUseful ? 'Feedback registrado com sucesso! ✅' : 'Feedback registrado! Vamos melhorar! 📝', 'success');
+            } else {
+                throw new Error(result.error || 'Erro ao enviar feedback');
+            }
+        } catch (error) {
+            console.error('Erro ao enviar feedback:', error);
+            showNotification('❌ Erro ao registrar feedback: ' + error.message, 'error');
+            
+            // Reabilitar botões em caso de erro
+            feedbackButtons.forEach(btn => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            });
+        }
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' : 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+            animation: slideInRight 0.3s ease-out;
+            font-weight: 600;
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease-out';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    function addUserMessage(text) {
+        const chatArea = document.getElementById('chatArea');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message user-message';
+        messageDiv.innerHTML = `
+            <div class="message-bubble">
+                <p>${text}</p>
+            </div>
+        `;
+        chatArea.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    function addBotMessage(text) {
+        const chatArea = document.getElementById('chatArea');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot-message';
+        messageDiv.innerHTML = `
+            <div class="bot-icon">
+                <div class="bot-face">
+                    <div class="bot-eyes">
+                        <span class="eye"></span>
+                        <span class="eye"></span>
+                    </div>
+                    <div class="bot-mouth"></div>
+                </div>
+            </div>
+            <div class="message-bubble">
+                <p>${text}</p>
+            </div>
+        `;
+        chatArea.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        const chatArea = document.getElementById('chatArea');
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    // Permitir enviar com Enter
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('userQuestion').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askBot();
+            }
+        });
+    });
+</script>

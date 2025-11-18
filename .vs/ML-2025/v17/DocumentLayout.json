@@ -1,0 +1,198 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\pages\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:pages\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\mlmodels\\sentiment.csv||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:mlmodels\\sentiment.csv||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\pages\\index.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:pages\\index.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\services\\modelbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:services\\modelbuilder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\models\\sentimentprediction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:models\\sentimentprediction.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\models\\predictionresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:models\\predictionresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\models\\predictrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:models\\predictrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\models\\sentimentdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:models\\sentimentdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|c:\\users\\trabalho\\source\\repos\\ml-2025\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{71F76AC0-B5AF-46A1-A62F-F3D65F0C2CD4}|ML-2025.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1107971758:0:{81164725-9a96-4ece-a4cb-440d8fd285e5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PredictionResponse.cs",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Models\\PredictionResponse.cs",
+              "RelativeDocumentMoniker": "Models\\PredictionResponse.cs",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Models\\PredictionResponse.cs",
+              "RelativeToolTip": "Models\\PredictionResponse.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAA6AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-17T22:20:26.681Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Index.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Pages\\Index.cshtml.cs",
+              "RelativeDocumentMoniker": "Pages\\Index.cshtml.cs",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Pages\\Index.cshtml.cs",
+              "RelativeToolTip": "Pages\\Index.cshtml.cs",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAcwCAAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-17T22:19:16.395Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Pages\\Index.cshtml",
+              "RelativeDocumentMoniker": "Pages\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Pages\\Index.cshtml",
+              "RelativeToolTip": "Pages\\Index.cshtml",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAAABYAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-09-17T22:19:02.115Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-09-17T22:17:19.775Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "PredictRequest.cs",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Models\\PredictRequest.cs",
+              "RelativeDocumentMoniker": "Models\\PredictRequest.cs",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Models\\PredictRequest.cs",
+              "RelativeToolTip": "Models\\PredictRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-06T13:15:18.912Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "sentiment.csv",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\MLModels\\sentiment.csv",
+              "RelativeDocumentMoniker": "MLModels\\sentiment.csv",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\MLModels\\sentiment.csv",
+              "RelativeToolTip": "MLModels\\sentiment.csv",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002120|",
+              "WhenOpened": "2025-09-06T13:00:29.815Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAswBIAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-06T12:53:10.516Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ModelBuilder.cs",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Services\\ModelBuilder.cs",
+              "RelativeDocumentMoniker": "Services\\ModelBuilder.cs",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Services\\ModelBuilder.cs",
+              "RelativeToolTip": "Services\\ModelBuilder.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAABIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-06T12:51:21.105Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SentimentPrediction.cs",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Models\\SentimentPrediction.cs",
+              "RelativeDocumentMoniker": "Models\\SentimentPrediction.cs",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Models\\SentimentPrediction.cs",
+              "RelativeToolTip": "Models\\SentimentPrediction.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-06T12:50:17.485Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "SentimentData.cs",
+              "DocumentMoniker": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Models\\SentimentData.cs",
+              "RelativeDocumentMoniker": "Models\\SentimentData.cs",
+              "ToolTip": "C:\\Users\\Trabalho\\source\\repos\\ML-2025\\Models\\SentimentData.cs",
+              "RelativeToolTip": "Models\\SentimentData.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-06T12:49:01.322Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
