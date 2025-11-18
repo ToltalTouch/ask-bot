@@ -21,11 +21,30 @@ namespace ML_2025.Pages
         {
         }
 
-        public async Task<IActionResult> OnGetFetchQuestions(int amount = 10, string? category = null, string? difficulty = null)
+        // lang: "pt" (padrão) retorna campos em português quando disponíveis; "en" retorna os campos originais em inglês
+        public async Task<IActionResult> OnGetFetchQuestions(int amount = 10, string? category = null, string? difficulty = null, string? lang = "pt")
         {
             try
             {
                 var questions = await _triviaService.GetTriviaBooleanQuestions(amount, category, difficulty);
+                // Se o usuário pediu português (padrão), mapear para os campos traduzidos (quando existentes)
+                if (string.IsNullOrEmpty(lang) || lang.ToLower() == "pt")
+                {
+                    var pt = questions.Select(q => new
+                    {
+                        category = string.IsNullOrEmpty(q.CategoryPt) ? q.Category : q.CategoryPt,
+                        type = q.Type,
+                        difficulty = q.Difficulty,
+                        question = string.IsNullOrEmpty(q.QuestionPt) ? q.Question : q.QuestionPt,
+                        correctAnswer = string.IsNullOrEmpty(q.CorrectAnswerPt) ? q.CorrectAnswer : q.CorrectAnswerPt,
+                        incorrectAnswers = q.IncorrectAnswers,
+                        curiosidade = q.Curiosidade
+                    }).ToList();
+
+                    return new JsonResult(pt);
+                }
+
+                // Caso contrário, retornar os campos originais (inglês)
                 return new JsonResult(questions);
             }
             catch (Exception ex)

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AjWWRfdpARU=",
+  "dgSpecHash": "zPEUpMIkb3M=",
   "success": true,
-  "projectFilePath": "C:\\C#\\ML-2025\\ML-2025.csproj",
+  "projectFilePath": "c:\\C#\\ask-bot\\ML-2025.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\micael.amaral\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\8.0.0\\microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512",
     "C:\\Users\\micael.amaral\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.1\\microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512",

@@ -1041,11 +1041,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\C#\\ML-2025\\ML-2025.csproj",
+      "projectUniqueName": "C:\\C#\\ask-bot\\ML-2025.csproj",
       "projectName": "ML-2025",
-      "projectPath": "C:\\C#\\ML-2025\\ML-2025.csproj",
+      "projectPath": "C:\\C#\\ask-bot\\ML-2025.csproj",
       "packagesPath": "C:\\Users\\micael.amaral\\.nuget\\packages\\",
-      "outputPath": "C:\\C#\\ML-2025\\obj\\",
+      "outputPath": "C:\\C#\\ask-bot\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
