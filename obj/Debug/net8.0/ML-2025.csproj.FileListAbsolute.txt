@@ -61,3 +61,4 @@ C:\C#\ML-2025\obj\Debug\net8.0\refint\ML-2025.dll
 C:\C#\ML-2025\obj\Debug\net8.0\ML-2025.pdb
 C:\C#\ML-2025\obj\Debug\net8.0\ML-2025.genruntimeconfig.cache
 C:\C#\ML-2025\obj\Debug\net8.0\ref\ML-2025.dll
+C:\C#\ML-2025\obj\Debug\net8.0\ML-2025.sourcelink.json

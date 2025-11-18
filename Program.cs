@@ -13,6 +13,10 @@ builder.Services.AddSingleton<QuizService>();
 // Registrar o serviço de Feedback
 builder.Services.AddSingleton<FeedbackService>();
 
+// Registrar o serviço de Trivia com HttpClient
+builder.Services.AddHttpClient<TriviaService>();
+builder.Services.AddSingleton<TriviaService>();
+
 var pastaModelos = Path.Combine(AppContext.BaseDirectory, "MLModels");
 if (!File.Exists(Path.Combine(pastaModelos, "model.zip")))
     ModelBuilder.Treinar(pastaModelos);

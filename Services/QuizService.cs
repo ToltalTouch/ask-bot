@@ -112,6 +112,11 @@ namespace ML_2025.Services
             return _facts?.Count ?? 0;
         }
 
+        public void ReloadFacts()
+        {
+            LoadFacts();
+        }
+
         public HistoricalFact? SearchFactByQuestion(string question)
         {
             if (_facts == null || _facts.Count == 0 || string.IsNullOrWhiteSpace(question))

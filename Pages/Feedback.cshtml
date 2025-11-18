@@ -1,0 +1,365 @@
+@page
+@model FeedbackPageModel
+@{
+    ViewData["Title"] = "Relatório de Feedback";
+}
+
+<nav class="top-nav">
+    <a href="/" class="nav-link">🎮 Quiz</a>
+    <a href="/AskBot" class="nav-link">🤖 Pergunte ao Bot</a>
+    <a href="/Feedback" class="nav-link active">📊 Relatórios</a>
+</nav>
+
+<header class="quiz-header">
+    <h1>📊 RELATÓRIO DE FEEDBACK</h1>
+    <p>Análise de todas as requisições e feedbacks dos usuários</p>
+</header>
+
+<main class="feedback-report-container">
+    <!-- Estatísticas Gerais -->
+    <section class="stats-section">
+        <h2>📈 Estatísticas Gerais</h2>
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-number">@Model.Stats.TotalRequests</div>
+                <div class="stat-label">Total de Perguntas</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">✅</div>
+                <div class="stat-number">@Model.Stats.UsefulRequests</div>
+                <div class="stat-label">Marcadas como Úteis</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="stat-icon">❌</div>
+                <div class="stat-number">@Model.Stats.NotUsefulRequests</div>
+                <div class="stat-label">Não Úteis</div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-number">@Model.Stats.NoFeedbackRequests</div>
+                <div class="stat-label">Sem Feedback</div>
+            </div>
+        </div>
+
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-number">@Model.Stats.AverageConfidence.ToString("P0")</div>
+                <div class="stat-label">Confiança Média</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-number">@Model.Stats.DatasetSourceCount</div>
+                <div class="stat-label">Do Dataset</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🤖</div>
+                <div class="stat-number">@Model.Stats.MlSourceCount</div>
+                <div class="stat-label">Da IA</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-icon">👍</div>
+                <div class="stat-number">@(Model.Stats.TotalRequests > 0 ? ((double)Model.Stats.UsefulRequests / Model.Stats.TotalRequests).ToString("P0") : "0%")</div>
+                <div class="stat-label">Taxa de Aprovação</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Arquivos CSV -->
+    <section class="files-section">
+        <h2>📁 Arquivos Gerados</h2>
+        <div class="files-info">
+            <div class="file-card">
+                <div class="file-icon">📋</div>
+                <div class="file-details">
+                    <h3>all_feedback.csv</h3>
+                    <p>Contém <strong>TODAS</strong> as requisições feitas pelos usuários</p>
+                    <p class="file-path">📂 wwwroot/feedback/all_feedback.csv</p>
+                    <a href="/feedback/all_feedback.csv" download class="download-btn">⬇️ Baixar</a>
+                </div>
+            </div>
+            <div class="file-card">
+                <div class="file-icon">⭐</div>
+                <div class="file-details">
+                    <h3>useful_feedback.csv</h3>
+                    <p>Contém <strong>APENAS</strong> as requisições marcadas como úteis (👍)</p>
+                    <p class="file-path">📂 wwwroot/feedback/useful_feedback.csv</p>
+                    <a href="/feedback/useful_feedback.csv" download class="download-btn">⬇️ Baixar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Últimas Requisições -->
+    <section class="recent-section">
+        <h2>🕒 Últimas 10 Requisições</h2>
+        <div class="table-responsive">
+            <table class="feedback-table">
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Pergunta</th>
+                        <th>Resposta</th>
+                        <th>Fonte</th>
+                        <th>Confiança</th>
+                        <th>Feedback</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.RecentFeedback)
+                    {
+                        <tr>
+                            <td>@item.Timestamp.ToString("dd/MM HH:mm")</td>
+                            <td class="question-cell">@item.Question</td>
+                            <td class="answer-cell">
+                                @if (item.Answer)
+                                {
+                                    <span class="badge badge-success">✅ Verdadeiro</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">❌ Falso</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Source == "dataset")
+                                {
+                                    <span class="badge badge-info">📚 Dataset</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning">🤖 IA</span>
+                                }
+                            </td>
+                            <td>@item.Confidence.ToString("P0")</td>
+                            <td>
+                                @if (item.IsUseful == true)
+                                {
+                                    <span class="badge badge-success">👍 Útil</span>
+                                }
+                                else if (item.IsUseful == false)
+                                {
+                                    <span class="badge badge-danger">👎 Não útil</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">⏳ Sem feedback</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<style>
+    .feedback-report-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .stats-section, .files-section, .recent-section {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .stats-section h2, .files-section h2, .recent-section h2 {
+        color: white;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card.success {
+        border-color: rgba(56, 239, 125, 0.5);
+        background: rgba(56, 239, 125, 0.1);
+    }
+
+    .stat-card.danger {
+        border-color: rgba(235, 51, 73, 0.5);
+        background: rgba(235, 51, 73, 0.1);
+    }
+
+    .stat-card.info {
+        border-color: rgba(102, 126, 234, 0.5);
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: white;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+    }
+
+    .files-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .file-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 1.5rem;
+        display: flex;
+        gap: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .file-icon {
+        font-size: 3rem;
+    }
+
+    .file-details h3 {
+        color: white;
+        margin: 0 0 0.5rem 0;
+        font-size: 1.2rem;
+    }
+
+    .file-details p {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 0.25rem 0;
+        font-size: 0.9rem;
+    }
+
+    .file-path {
+        font-family: monospace;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .download-btn {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: transform 0.3s;
+    }
+
+    .download-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .feedback-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+    }
+
+    .feedback-table th {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .feedback-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .feedback-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .question-cell {
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-success {
+        background: rgba(56, 239, 125, 0.2);
+        color: #38ef7d;
+        border: 1px solid #38ef7d;
+    }
+
+    .badge-danger {
+        background: rgba(235, 51, 73, 0.2);
+        color: #eb3349;
+        border: 1px solid #eb3349;
+    }
+
+    .badge-info {
+        background: rgba(102, 126, 234, 0.2);
+        color: #667eea;
+        border: 1px solid #667eea;
+    }
+
+    .badge-warning {
+        background: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+        border: 1px solid #ffc107;
+    }
+
+    .badge-secondary {
+        background: rgba(108, 117, 125, 0.2);
+        color: #6c757d;
+        border: 1px solid #6c757d;
+    }
+
+    @@media (max-width: 768px) {
+        .stats-cards {
+            grid-template-columns: 1fr;
+        }
+        
+        .files-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

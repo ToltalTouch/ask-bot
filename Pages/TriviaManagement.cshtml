@@ -1,0 +1,452 @@
+@page
+@model ML_2025.Pages.TriviaManagementModel
+@{
+    ViewData["Title"] = "Gerenciar Trivia";
+}
+
+<style>
+    .trivia-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .controls-panel {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 30px;
+        border-radius: 15px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .control-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .control-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .control-group select,
+    .control-group input {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .btn-fetch {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-fetch:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(245, 87, 108, 0.4);
+    }
+
+    .questions-grid {
+        display: grid;
+        gap: 20px;
+    }
+
+    .question-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+    .question-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .category-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .difficulty-badge {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+    }
+
+    .difficulty-easy { background: #4CAF50; }
+    .difficulty-medium { background: #FF9800; }
+    .difficulty-hard { background: #F44336; }
+
+    .question-content {
+        margin: 20px 0;
+    }
+
+    .question-text {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 10px;
+    }
+
+    .question-original {
+        font-size: 13px;
+        color: #666;
+        font-style: italic;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f5f5f5;
+        border-radius: 8px;
+    }
+
+    .answer-display {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .answer-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .answer-value {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    .answer-true {
+        background: #4CAF50;
+        color: white;
+    }
+
+    .answer-false {
+        background: #F44336;
+        color: white;
+    }
+
+    .curiosity {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 10px 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-approve {
+        flex: 1;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 25px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .btn-approve:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-approve:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-reject {
+        flex: 1;
+        background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 25px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .btn-reject:hover {
+        transform: scale(1.05);
+    }
+
+    .status-message {
+        text-align: center;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+
+    .status-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-error {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 40px;
+        font-size: 18px;
+        color: #667eea;
+    }
+
+    .loading::after {
+        content: '...';
+        animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @@keyframes dots {
+        0%, 20% { content: '.'; }
+        40% { content: '..'; }
+        60%, 100% { content: '...'; }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+    }
+
+    .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="trivia-container">
+    <h1 style="text-align: center; margin-bottom: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        🎲 Gerenciar Perguntas de Trivia
+    </h1>
+
+    <div class="controls-panel">
+        <h2 style="margin-top: 0;">🔍 Buscar Perguntas da API</h2>
+        <div class="control-group">
+            <div>
+                <label>Quantidade:</label>
+                <input type="number" id="amount" min="1" max="50" value="10" />
+            </div>
+            <div>
+                <label>Categoria:</label>
+                <select id="category">
+                    <option value="">Todas</option>
+                    <option value="9">Conhecimento Geral</option>
+                    <option value="17">Ciência e Natureza</option>
+                    <option value="22">Geografia</option>
+                    <option value="23">História</option>
+                    <option value="21">Esportes</option>
+                    <option value="27">Animais</option>
+                    <option value="18">Ciência: Computadores</option>
+                    <option value="19">Ciência: Matemática</option>
+                    <option value="20">Mitologia</option>
+                </select>
+            </div>
+            <div>
+                <label>Dificuldade:</label>
+                <select id="difficulty">
+                    <option value="">Todas</option>
+                    <option value="easy">Fácil</option>
+                    <option value="medium">Médio</option>
+                    <option value="hard">Difícil</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-fetch" onclick="fetchQuestions()">
+            🚀 Buscar Perguntas
+        </button>
+    </div>
+
+    <div id="statusMessage"></div>
+    <div id="questionsContainer"></div>
+</div>
+
+<script>
+    let currentQuestions = [];
+
+    async function fetchQuestions() {
+        const amount = document.getElementById('amount').value;
+        const category = document.getElementById('category').value;
+        const difficulty = document.getElementById('difficulty').value;
+
+        const container = document.getElementById('questionsContainer');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        container.innerHTML = '<div class="loading">Buscando perguntas</div>';
+        statusMessage.innerHTML = '';
+
+        try {
+            const params = new URLSearchParams({
+                amount: amount,
+                category: category,
+                difficulty: difficulty
+            });
+
+            const response = await fetch(`/TriviaManagement?handler=FetchQuestions&${params}`);
+            
+            if (!response.ok) {
+                throw new Error('Erro ao buscar perguntas');
+            }
+
+            const questions = await response.json();
+            currentQuestions = questions;
+
+            if (questions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🤷</div>
+                        <h2>Nenhuma pergunta encontrada</h2>
+                        <p>Tente ajustar os filtros e buscar novamente.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            displayQuestions(questions);
+            statusMessage.innerHTML = `<div class="status-message status-success">✅ ${questions.length} pergunta(s) carregada(s) com sucesso!</div>`;
+        } catch (error) {
+            console.error('Erro:', error);
+            container.innerHTML = '';
+            statusMessage.innerHTML = `<div class="status-message status-error">❌ Erro ao buscar perguntas: ${error.message}</div>`;
+        }
+    }
+
+    function displayQuestions(questions) {
+        const container = document.getElementById('questionsContainer');
+        
+        const html = questions.map((q, index) => {
+            const difficultyClass = `difficulty-${q.difficulty}`;
+            const difficultyText = q.difficulty === 'easy' ? 'Fácil' : q.difficulty === 'medium' ? 'Médio' : 'Difícil';
+            const answerClass = q.correctAnswer === 'True' ? 'answer-true' : 'answer-false';
+            const answerText = q.correctAnswer === 'True' ? 'Verdadeiro ✓' : 'Falso ✗';
+
+            return `
+                <div class="question-card" id="card-${index}">
+                    <div class="question-header">
+                        <span class="category-badge">${q.categoryPt}</span>
+                        <span class="difficulty-badge ${difficultyClass}">${difficultyText}</span>
+                    </div>
+                    
+                    <div class="question-content">
+                        <div class="question-text">
+                            <strong>Pergunta (PT):</strong> ${q.questionPt}
+                        </div>
+                        <div class="question-original">
+                            <strong>Original:</strong> ${q.question}
+                        </div>
+                        
+                        <div class="answer-display">
+                            <span class="answer-label">Resposta:</span>
+                            <span class="answer-value ${answerClass}">${answerText}</span>
+                        </div>
+                        
+                        <div class="curiosity">
+                            <strong>ℹ️ Curiosidade:</strong> ${q.curiosidade}
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn-approve" onclick="approveQuestion(${index})">
+                            ✅ Aprovar e Salvar no Dataset
+                        </button>
+                        <button class="btn-reject" onclick="rejectQuestion(${index})">
+                            ❌ Rejeitar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = `<div class="questions-grid">${html}</div>`;
+    }
+
+    async function approveQuestion(index) {
+        const question = currentQuestions[index];
+        const card = document.getElementById(`card-${index}`);
+        const buttons = card.querySelectorAll('button');
+        
+        buttons.forEach(btn => btn.disabled = true);
+
+        try {
+            const response = await fetch('/TriviaManagement?handler=SaveQuestion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(question)
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar pergunta');
+            }
+
+            card.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
+            card.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <h2 style="color: #155724;">✅ Pergunta Aprovada e Salva!</h2>
+                    <p>A pergunta foi adicionada ao dataset com sucesso.</p>
+                </div>
+            `;
+
+            document.getElementById('statusMessage').innerHTML = 
+                '<div class="status-message status-success">✅ Pergunta salva no dataset com sucesso!</div>';
+
+        } catch (error) {
+            console.error('Erro:', error);
+            buttons.forEach(btn => btn.disabled = false);
+            document.getElementById('statusMessage').innerHTML = 
+                `<div class="status-message status-error">❌ Erro ao salvar: ${error.message}</div>`;
+        }
+    }
+
+    function rejectQuestion(index) {
+        const card = document.getElementById(`card-${index}`);
+        card.style.opacity = '0.5';
+        card.style.filter = 'grayscale(100%)';
+        card.querySelector('.action-buttons').innerHTML = 
+            '<div style="text-align: center; color: #666; padding: 10px;">❌ Pergunta Rejeitada</div>';
+    }
+</script>
+
+@Html.AntiForgeryToken()
