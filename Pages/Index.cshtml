@@ -71,5 +71,35 @@
                 <span class="stat-value" id="levelValue">🌱 Iniciante</span>
             </div>
         </div>
+        <!-- Debug console -->
+        <div id="debugConsole" style="display: none; margin-top: 10px; padding: 10px; background: #222; color: #0f0; font-family: monospace; font-size: 10px; max-height: 100px; overflow-y: auto; border-radius: 5px;"></div>
     </div>
 </main>
+
+<script>
+    // Toggle debug console com Ctrl+D
+    window.DEBUG_MODE = false;
+    window.debugLogs = [];
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === 'd') {
+            window.DEBUG_MODE = !window.DEBUG_MODE;
+            const debugConsole = document.getElementById('debugConsole');
+            debugConsole.style.display = window.DEBUG_MODE ? 'block' : 'none';
+        }
+    });
+    
+    // Interceptar console.log
+    const originalLog = console.log;
+    console.log = function(...args) {
+        originalLog.apply(console, args);
+        if (window.DEBUG_MODE) {
+            window.debugLogs.push(args.join(' '));
+            const debugConsole = document.getElementById('debugConsole');
+            debugConsole.innerHTML = window.debugLogs.slice(-20).map(log => 
+                `<div>${new Date().toLocaleTimeString()}: ${log}</div>`
+            ).join('');
+            debugConsole.scrollTop = debugConsole.scrollHeight;
+        }
+    };
+</script>

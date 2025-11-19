@@ -1,5 +1,7 @@
 using ML_2025.Models;
 using System.Globalization;
+using System.IO;
+using System.Text;
 
 namespace ML_2025.Services
 {
@@ -18,48 +20,81 @@ namespace ML_2025.Services
         private void LoadFacts()
         {
             _facts = new List<HistoricalFact>();
-            var filePath = Path.Combine(AppContext.BaseDirectory, "MLModels", "sentiment.csv");
+            var filePath = Path.Combine(_env.WebRootPath, "data", "quiz_data.csv");
 
             if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException($"Arquivo CSV não encontrado: {filePath}");
+                // Se o arquivo de quiz não existir, podemos opcionalmente carregar do sentiment.csv como fallback, sem curiosidades.
+                LoadFactsFromSentimentCsv();
+                return;
             }
 
+            using (var reader = new StreamReader(filePath, Encoding.UTF8))
+            {
+                // Pular o cabeçalho
+                if (!reader.EndOfStream)
+                {
+                    reader.ReadLine();
+                }
+
+                int id = 1;
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    var parts = ParseCsvLine(line);
+
+                    if (parts.Length >= 3)
+                    {
+                        // Converter "Verdadeiro" ou "Falso" para booleano
+                        bool isTrue = parts[0].Equals("Verdadeiro", StringComparison.OrdinalIgnoreCase) 
+                            || parts[0].Equals("True", StringComparison.OrdinalIgnoreCase)
+                            || parts[0] == "1";
+                        
+                        _facts.Add(new HistoricalFact
+                        {
+                            Id = id++,
+                            FatoHistorico = parts[1],
+                            Verdadeiro = isTrue,
+                            Curiosidade = parts[2]
+                        });
+                    }
+                }
+            }
+        }
+
+        private void LoadFactsFromSentimentCsv()
+        {
+            var filePath = Path.Combine(AppContext.BaseDirectory, "MLModels", "sentiment.csv");
+            if (!File.Exists(filePath)) return;
+
             var lines = File.ReadAllLines(filePath);
-            
-            // Pular o cabeçalho (primeira linha)
             for (int i = 1; i < lines.Length; i++)
             {
                 var line = lines[i];
                 if (string.IsNullOrWhiteSpace(line)) continue;
-
-                try
+                
+                var parts = line.Split(new[] { ',' }, 2);
+                if (parts.Length == 2)
                 {
-                    // O formato é Label,Text
-                    var parts = line.Split(new[] { ',' }, 2);
-                    
-                    if (parts.Length == 2)
+                    var text = parts[1].Trim();
+                    if (text.StartsWith("\"") && text.EndsWith("\""))
                     {
-                        var text = parts[1].Trim();
-                        // Remove aspas do início e do fim, se existirem
-                        if (text.StartsWith("\"") && text.EndsWith("\""))
-                        {
-                            text = text.Substring(1, text.Length - 2).Replace("\"\"", "\""); // Trata aspas duplas escapadas
-                        }
+                        text = text.Substring(1, text.Length - 2).Replace("\"\"", "\"");
+                    }
 
+                    // Adiciona apenas fatos que parecem ser históricos (mais de 5 palavras)
+                    if (text.Split(' ').Length > 5)
+                    {
                         _facts.Add(new HistoricalFact
                         {
-                            Id = i, // Usar o número da linha como ID
+                            Id = i,
                             FatoHistorico = text,
-                            Verdadeiro = parts[0].Trim().Equals("true", StringComparison.OrdinalIgnoreCase) || parts[0].Trim().Equals("\"true\"", StringComparison.OrdinalIgnoreCase),
-                            Curiosidade = "" // Curiosidade não está mais disponível neste formato
+                            Verdadeiro = parts[0].Trim() == "1",
+                            Curiosidade = "" // Sem curiosidade neste arquivo
                         });
                     }
-                }
-                catch (Exception ex)
-                {
-                    // Log error but continue processing
-                    Console.WriteLine($"Erro ao processar linha {i}: {ex.Message}");
                 }
             }
         }
@@ -76,11 +111,21 @@ namespace ML_2025.Services
 
                 if (c == '"')
                 {
-                    inQuotes = !inQuotes;
+                    if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                    {
+                        // Aspas duplas escapadas
+                        currentField += '"';
+                        i++;
+                    }
+                    else
+                    {
+                        // Abre/fecha aspas
+                        inQuotes = !inQuotes;
+                    }
                 }
                 else if (c == ',' && !inQuotes)
                 {
-                    result.Add(currentField);
+                    result.Add(currentField.Trim());
                     currentField = "";
                 }
                 else
@@ -89,7 +134,7 @@ namespace ML_2025.Services
                 }
             }
             
-            result.Add(currentField);
+            result.Add(currentField.Trim());
             return result.ToArray();
         }
 

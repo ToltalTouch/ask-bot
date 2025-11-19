@@ -84,20 +84,45 @@ async function startGame() {
 
 async function loadQuestionsFromBackend() {
     try {
+        console.log('Iniciando carregamento de perguntas...');
         const response = await fetch('/?handler=Questions&count=10');
-        if (!response.ok) throw new Error('Erro ao carregar perguntas');
         
-        questionsQueue = await response.json();
-        console.log(`${questionsQueue.length} perguntas carregadas do backend`);
+        console.log('Resposta recebida. Status:', response.status, 'OK:', response.ok);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Erro HTTP:', response.status, errorText);
+            throw new Error(`Erro HTTP: ${response.status} - ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('JSON parseado:', data);
+        
+        if (!Array.isArray(data)) {
+            console.error('Dados não são um array:', data);
+            throw new Error('Formato de resposta inválido');
+        }
+        
+        questionsQueue = data;
+        console.log(`✅ ${questionsQueue.length} perguntas carregadas com sucesso`);
+        
+        if (questionsQueue.length > 0) {
+            console.log('Primeira pergunta:', questionsQueue[0]);
+        }
+        
+        if (questionsQueue.length === 0) {
+            throw new Error('Nenhuma pergunta foi carregada do servidor');
+        }
     } catch (error) {
-        console.error('Erro ao carregar perguntas:', error);
-        addBotMessage('⚠️ Erro ao carregar perguntas. Verifique a conexão.');
+        console.error('❌ Erro ao carregar perguntas:', error);
+        addBotMessage(`⚠️ Erro ao carregar perguntas: ${error.message}`);
         disableButtons();
     }
 }
 
 async function loadNextQuestion() {
     if (questionsQueue.length === 0) {
+        console.log('Sem mais perguntas na fila');
         endGame();
         return;
     }
@@ -105,14 +130,38 @@ async function loadNextQuestion() {
     // Pegar a próxima pergunta da fila
     currentQuestion = questionsQueue.shift();
     
+    if (!currentQuestion) {
+        console.error('Pergunta não pode ser undefined');
+        addBotMessage('❌ Erro ao carregar pergunta. Tente novamente.');
+        disableButtons();
+        return;
+    }
+    
     // Marcar o tempo de início da pergunta para calcular bônus de velocidade
     window.questionStartTime = Date.now();
     
+    // Verificar se a pergunta tem texto
+    if (!currentQuestion.text) {
+        console.error('Pergunta sem texto:', currentQuestion);
+        addBotMessage('❌ Pergunta inválida. Recarregue a página.');
+        disableButtons();
+        return;
+    }
+    
+    console.log('Pergunta carregada:', currentQuestion);
     addBotMessage(currentQuestion.text);
     enableButtons();
 }
 
 function submitAnswer(userAnswer) {
+    // Validação: verificar se há pergunta atual
+    if (!currentQuestion) {
+        console.error('Erro: currentQuestion é undefined');
+        addBotMessage('❌ Erro: Nenhuma pergunta carregada. Recarregue a página.');
+        enableButtons();
+        return;
+    }
+    
     disableButtons();
     
     // Add user response
@@ -185,7 +234,7 @@ function submitAnswer(userAnswer) {
             } else {
                 endGame();
             }
-        }, currentQuestion.curiosity ? 2500 : 1500);
+        }, currentQuestion && currentQuestion.curiosity ? 2500 : 1500);
     }, 800);
 }
 
@@ -320,12 +369,22 @@ function stopTimer() {
 
 function enableButtons() {
     const buttons = document.querySelectorAll('.answer-buttons .btn');
-    buttons.forEach(btn => btn.disabled = false);
+    console.log(`Habilitando ${buttons.length} botões`);
+    buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+    });
 }
 
 function disableButtons() {
     const buttons = document.querySelectorAll('.answer-buttons .btn');
-    buttons.forEach(btn => btn.disabled = true);
+    console.log(`Desabilitando ${buttons.length} botões`);
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.pointerEvents = 'none';
+    });
 }
 
 function endGame() {
