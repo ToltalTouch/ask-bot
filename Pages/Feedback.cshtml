@@ -4,12 +4,6 @@
     ViewData["Title"] = "Relatório de Feedback";
 }
 
-<nav class="top-nav">
-    <a href="/" class="nav-link">🎮 Quiz</a>
-    <a href="/AskBot" class="nav-link">🤖 Pergunte ao Bot</a>
-    <a href="/Feedback" class="nav-link active">📊 Relatórios</a>
-</nav>
-
 <header class="quiz-header">
     <h1>📊 RELATÓRIO DE FEEDBACK</h1>
     <p>Análise de todas as requisições e feedbacks dos usuários</p>
@@ -125,26 +119,26 @@
                             <td>
                                 @if (item.Source == "dataset")
                                 {
-                                    <span class="badge badge-info">📚 Dataset</span>
+                                    <span class="badge badge-info">Dataset</span>
                                 }
                                 else
                                 {
-                                    <span class="badge badge-warning">🤖 IA</span>
+                                    <span class="badge badge-warning">IA</span>
                                 }
                             </td>
                             <td>@item.Confidence.ToString("P0")</td>
                             <td>
                                 @if (item.IsUseful == true)
                                 {
-                                    <span class="badge badge-success">👍 Útil</span>
+                                    <span class="badge badge-success">Útil</span>
                                 }
                                 else if (item.IsUseful == false)
                                 {
-                                    <span class="badge badge-danger">👎 Não útil</span>
+                                    <span class="badge badge-danger">Não útil</span>
                                 }
                                 else
                                 {
-                                    <span class="badge badge-secondary">⏳ Sem feedback</span>
+                                    <span class="badge badge-secondary">Sem feedback</span>
                                 }
                             </td>
                         </tr>
@@ -160,6 +154,8 @@
         max-width: 1200px;
         margin: 2rem auto;
         padding: 0 1rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .stats-section, .files-section, .recent-section {
@@ -168,6 +164,7 @@
         padding: 2rem;
         margin-bottom: 2rem;
         backdrop-filter: blur(10px);
+        overflow: hidden;
     }
 
     .stats-section h2, .files-section h2, .recent-section h2 {
@@ -178,7 +175,7 @@
 
     .stats-cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 1rem;
         margin-bottom: 1rem;
     }
@@ -230,7 +227,7 @@
 
     .files-info {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1.5rem;
     }
 
@@ -241,16 +238,24 @@
         display: flex;
         gap: 1rem;
         border: 2px solid rgba(255, 255, 255, 0.2);
+        align-items: flex-start;
     }
 
     .file-icon {
         font-size: 3rem;
+        flex-shrink: 0;
+    }
+
+    .file-details {
+        flex: 1;
+        min-width: 0;
     }
 
     .file-details h3 {
         color: white;
         margin: 0 0 0.5rem 0;
         font-size: 1.2rem;
+        word-break: break-all;
     }
 
     .file-details p {
@@ -263,6 +268,7 @@
         font-family: monospace;
         font-size: 0.8rem;
         color: rgba(255, 255, 255, 0.6);
+        word-break: break-all;
     }
 
     .download-btn {
@@ -282,13 +288,18 @@
     }
 
     .table-responsive {
+        width: 100%;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+        border-radius: 10px;
     }
 
     .feedback-table {
         width: 100%;
         border-collapse: collapse;
         color: white;
+        white-space: nowrap;
     }
 
     .feedback-table th {
@@ -309,7 +320,7 @@
     }
 
     .question-cell {
-        max-width: 300px;
+        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -321,6 +332,7 @@
         font-size: 0.85rem;
         font-weight: 600;
         display: inline-block;
+        white-space: nowrap;
     }
 
     .badge-success {
@@ -348,18 +360,46 @@
     }
 
     .badge-secondary {
-        background: rgba(108, 117, 125, 0.2);
-        color: #6c757d;
-        border: 1px solid #6c757d;
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffff;
+        border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
     @@media (max-width: 768px) {
-        .stats-cards {
+        .feedback-report-container {
+            padding: 0 10px;
+            margin-top: 1rem;
+        }
+
+        .stats-section, .files-section, .recent-section {
+            padding: 1rem;
+        }
+
+        .stats-cards, .files-info {
             grid-template-columns: 1fr;
         }
+
+        .file-card {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .file-details {
+            width: 100%;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+        }
         
-        .files-info {
-            grid-template-columns: 1fr;
+        .file-icon {
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-header h1 {
+            font-size: 1.5rem;
+            word-wrap: break-word;
         }
     }
 </style>

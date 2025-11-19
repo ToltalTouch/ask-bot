@@ -9,31 +9,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">Ask Bot</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="/TriviaManagement">Gerenciar Trivia</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Feedback">Feedback</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Privacy">Privacidade</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Index">Início</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+    <button id="sidebarToggleGlobal" class="sidebar-toggle-global" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+    </button>
 
 <style>
     body {
@@ -41,9 +19,7 @@
         padding: 0;
         font-family: Arial, sans-serif;
     }
-    .navbar {
-        margin-bottom: 20px;
-    }
+    /* Navbar removida */
 
     * {
         margin: 0;
@@ -73,6 +49,7 @@
         top: 0;
         box-shadow: 2px 0 10px rgba(0,0,0,0.3);
         z-index: 1000;
+        transition: transform .3s ease;
     }
 
     .sidebar-header {
@@ -141,6 +118,26 @@
         margin: 0 auto;
         padding: 40px;
     }
+    /* Botão global para mobile */
+    .sidebar-toggle-global {
+        display: none;
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        background: rgba(26,37,47,0.85);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #fff;
+        padding: 8px 10px;
+        border-radius: 8px;
+        z-index: 1101;
+    }
+    @@media (max-width: 768px) {
+        .sidebar { transform: translateX(-100%); }
+        .sidebar.open { transform: translateX(0); }
+        .main-content { margin-left: 0; }
+        .trivia-container { padding: 28px 22px; }
+        .sidebar-toggle-global { display: inline-flex; align-items:center; justify-content:center; }
+    }
 </style>
 
 <div class="page-wrapper">
@@ -150,10 +147,21 @@
             <h2>Menu</h2>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="/Index" class="active"><i class="fas fa-home"></i> Início</a></li>
-            <li><a href="/Feedback"><i class="fas fa-comments"></i> Feedback</a></li>
-            <li><a href="/TriviaManagement"><i class="fas fa-question-circle"></i> Gerenciar Trivia</a></li>
-            <li><a href="/Privacy"><i class="fas fa-shield-alt"></i> Privacidade</a></li>
+            @{
+                string path = ViewContext?.HttpContext?.Request?.Path.Value?.TrimEnd('/')?.ToLowerInvariant() ?? "/";
+                if (path == "/" || path == "") path = "/index";
+                bool Starts(string target)
+                {
+                    target = target.TrimEnd('/').ToLowerInvariant();
+                    return path == target || path.StartsWith(target + "/");
+                }
+                string Active(string target) => Starts(target) ? "active" : string.Empty;
+            }
+            <li><a href="/Index" class="@Active("/index")"><i class="fas fa-home"></i> Início</a></li>
+            <li><a href="/AskBot" class="@Active("/askbot")"><i class="fas fa-robot"></i> Pergunte ao Bot</a></li>
+            <li><a href="/Feedback" class="@Active("/feedback")"><i class="fas fa-comments"></i> Feedback</a></li>
+            <li><a href="/TriviaManagement" class="@Active("/triviamanagement")"><i class="fas fa-question-circle"></i> Gerenciar Trivia</a></li>
+            <li><a href="/Privacy" class="@Active("/privacy")"><i class="fas fa-shield-alt"></i> Privacidade</a></li>
         </ul>
     </div>
     <div class="main-content">
@@ -164,4 +172,13 @@
 </div>
 
 </body>
+<script>
+    (function(){
+        const toggleGlobal = document.getElementById('sidebarToggleGlobal');
+        const sidebar = document.querySelector('.sidebar');
+        toggleGlobal?.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    })();
+</script>
 </html>
