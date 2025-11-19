@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\C#\\ask-bot\\ML-2025.csproj": {}
+    "C:\\C#\\ask-bot\\ML-2025.csproj": {}
   },
   "projects": {
-    "c:\\C#\\ask-bot\\ML-2025.csproj": {
+    "C:\\C#\\ask-bot\\ML-2025.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\C#\\ask-bot\\ML-2025.csproj",
+        "projectUniqueName": "C:\\C#\\ask-bot\\ML-2025.csproj",
         "projectName": "ML-2025",
-        "projectPath": "c:\\C#\\ask-bot\\ML-2025.csproj",
+        "projectPath": "C:\\C#\\ask-bot\\ML-2025.csproj",
         "packagesPath": "C:\\Users\\micael.amaral\\.nuget\\packages\\",
-        "outputPath": "c:\\C#\\ask-bot\\obj\\",
+        "outputPath": "C:\\C#\\ask-bot\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

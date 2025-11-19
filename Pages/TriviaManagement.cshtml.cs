@@ -19,6 +19,7 @@ namespace ML_2025.Pages
 
         public void OnGet()
         {
+            // Aqui você pode adicionar lógica para inicializar a página, se necessário.
         }
 
         // lang: "pt" (padrão) retorna campos em português quando disponíveis; "en" retorna os campos originais em inglês
