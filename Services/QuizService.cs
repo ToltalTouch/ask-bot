@@ -18,7 +18,7 @@ namespace ML_2025.Services
         private void LoadFacts()
         {
             _facts = new List<HistoricalFact>();
-            var filePath = Path.Combine(_env.WebRootPath, "data", "dataset_fatos_historicos_3000.csv");
+            var filePath = Path.Combine(AppContext.BaseDirectory, "MLModels", "sentiment.csv");
 
             if (!File.Exists(filePath))
             {
@@ -35,16 +35,24 @@ namespace ML_2025.Services
 
                 try
                 {
-                    var parts = ParseCsvLine(line);
+                    // O formato é Label,Text
+                    var parts = line.Split(new[] { ',' }, 2);
                     
-                    if (parts.Length >= 4)
+                    if (parts.Length == 2)
                     {
+                        var text = parts[1].Trim();
+                        // Remove aspas do início e do fim, se existirem
+                        if (text.StartsWith("\"") && text.EndsWith("\""))
+                        {
+                            text = text.Substring(1, text.Length - 2).Replace("\"\"", "\""); // Trata aspas duplas escapadas
+                        }
+
                         _facts.Add(new HistoricalFact
                         {
-                            Id = int.Parse(parts[0]),
-                            FatoHistorico = parts[1].Trim(),
-                            Verdadeiro = parts[2].Trim().Equals("Verdadeiro", StringComparison.OrdinalIgnoreCase),
-                            Curiosidade = parts[3].Trim()
+                            Id = i, // Usar o número da linha como ID
+                            FatoHistorico = text,
+                            Verdadeiro = parts[0].Trim().Equals("true", StringComparison.OrdinalIgnoreCase) || parts[0].Trim().Equals("\"true\"", StringComparison.OrdinalIgnoreCase),
+                            Curiosidade = "" // Curiosidade não está mais disponível neste formato
                         });
                     }
                 }

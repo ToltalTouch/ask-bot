@@ -19,12 +19,12 @@ public class FeedbackRequest
 [IgnoreAntiforgeryToken]
 public class AskBotModel : PageModel
 {
-    private readonly QuizService _quizService;
+    private readonly TriviaService _triviaService;
     private readonly FeedbackService _feedbackService;
 
-    public AskBotModel(QuizService quizService, FeedbackService feedbackService)
+    public AskBotModel(TriviaService triviaService, FeedbackService feedbackService)
     {
-        _quizService = quizService;
+        _triviaService = triviaService;
         _feedbackService = feedbackService;
     }
 
@@ -41,29 +41,13 @@ public class AskBotModel : PageModel
                 return new JsonResult(new { error = "Pergunta vazia" }) { StatusCode = 400 };
             }
 
-            // Buscar resposta no dataset
-            var result = _quizService.SearchFactByQuestion(question);
+            // Usar o serviço de Trivia para obter a predição
+            var predictionResult = _triviaService.Predict(new PredictRequest { Text = question });
 
-            string curiosity;
-            bool answer;
-            double confidence;
-            string source;
-
-            if (result != null)
-            {
-                // Encontrou no dataset
-                answer = result.Verdadeiro;
-                curiosity = result.Curiosidade;
-                confidence = 1.0;
-                source = "dataset";
-            }
-            else
-            {
-                // Não encontrou - usar heurística ou ML simples
-                (answer, confidence) = AnalyzeQuestionWithHeuristics(question);
-                curiosity = "Não encontrei essa informação no meu banco de dados. Esta é uma análise baseada em padrões!";
-                source = "ml";
-            }
+            string curiosity = "Esta é uma análise baseada em nosso modelo de Machine Learning.";
+            bool answer = predictionResult.Prediction;
+            double confidence = predictionResult.Score;
+            string source = "ml";
 
             // Salvar a requisição em all_feedback.csv (sem feedback ainda)
             var feedbackData = new FeedbackData
@@ -142,58 +126,5 @@ public class AskBotModel : PageModel
         {
             return new JsonResult(new { error = ex.Message }) { StatusCode = 500 };
         }
-    }
-
-    private (bool answer, double confidence) AnalyzeQuestionWithHeuristics(string question)
-    {
-        // Normalizar pergunta
-        var normalizedQuestion = question.ToLower().Trim();
-
-        // Palavras-chave que geralmente indicam FALSO
-        var falseKeywords = new[]
-        {
-            "alienígena", "alien", "100%", "sempre", "nunca", "impossível",
-            "chifre" // vikings com chifres
-        };
-
-        // Palavras-chave que geralmente indicam VERDADEIRO
-        var trueKeywords = new[]
-        {
-            "terra", "redonda", "esférica", "gira", "sol",
-            "lua", "satélite", "natural"
-        };
-
-        // Padrões específicos conhecidos como FALSOS
-        if (normalizedQuestion.Contains("viking") && normalizedQuestion.Contains("chifre"))
-            return (false, 0.85);
-        
-        if (normalizedQuestion.Contains("muralha") && normalizedQuestion.Contains("china") && normalizedQuestion.Contains("espaço"))
-            return (false, 0.90);
-
-        if (normalizedQuestion.Contains("einstein") && normalizedQuestion.Contains("matemática") && normalizedQuestion.Contains("ruim"))
-            return (false, 0.85);
-
-        if (normalizedQuestion.Contains("10%") && normalizedQuestion.Contains("cérebro"))
-            return (false, 0.90);
-
-        // Padrões específicos conhecidos como VERDADEIROS
-        if (normalizedQuestion.Contains("terra") && (normalizedQuestion.Contains("redonda") || normalizedQuestion.Contains("esférica")))
-            return (true, 0.95);
-
-        if (normalizedQuestion.Contains("terra") && normalizedQuestion.Contains("sol") && normalizedQuestion.Contains("gira"))
-            return (true, 0.95);
-
-        // Análise por palavras-chave
-        int falseScore = falseKeywords.Count(k => normalizedQuestion.Contains(k));
-        int trueScore = trueKeywords.Count(k => normalizedQuestion.Contains(k));
-
-        if (falseScore > trueScore)
-            return (false, 0.60 + (falseScore * 0.05));
-        
-        if (trueScore > falseScore)
-            return (true, 0.60 + (trueScore * 0.05));
-
-        // Se não conseguir determinar, retornar com baixa confiança
-        return (true, 0.50);
     }
 }
