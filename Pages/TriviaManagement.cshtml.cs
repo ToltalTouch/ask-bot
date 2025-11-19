@@ -10,11 +10,13 @@ namespace ML_2025.Pages
     {
         private readonly TriviaService _triviaService;
         private readonly QuizService _quizService;
+        private readonly FeedbackService _feedbackService;
 
-        public TriviaManagementModel(TriviaService triviaService, QuizService quizService)
+        public TriviaManagementModel(TriviaService triviaService, QuizService quizService, FeedbackService feedbackService)
         {
             _triviaService = triviaService;
             _quizService = quizService;
+            _feedbackService = feedbackService;
         }
 
         public void OnGet()
@@ -54,25 +56,32 @@ namespace ML_2025.Pages
             }
         }
 
-        public async Task<IActionResult> OnPostSaveQuestion([FromBody] TriviaQuestion question)
+        public IActionResult OnPostSaveQuestion([FromBody] TriviaQuestion question)
         {
             try
             {
                 if (question == null)
                     return BadRequest(new { error = "Pergunta inválida" });
 
-                var success = _triviaService.SaveToDataset(question);
+                // Converter TriviaQuestion para FeedbackData e salvar
+                var feedbackData = new FeedbackData
+                {
+                    Timestamp = DateTime.Now,
+                    Question = question.QuestionPt,
+                    Answer = question.CorrectAnswer.Equals("True", StringComparison.OrdinalIgnoreCase) || question.CorrectAnswer.Equals("Verdadeiro", StringComparison.OrdinalIgnoreCase),
+                    Curiosity = question.Curiosidade,
+                    Confidence = 1.0, // Confiança máxima, pois foi adicionado manualmente
+                    Source = "manual", // Fonte manual/admin
+                    IsUseful = true, // Considerado útil por padrão
+                    UserFeedbackComment = "Adicionado via Gerenciador de Trivia"
+                };
+
+                _feedbackService.SaveFeedback(feedbackData);
                 
-                if (success)
-                {
-                    // Recarregar o QuizService para incluir a nova pergunta
-                    _quizService.ReloadFacts();
-                    return new JsonResult(new { success = true, message = "Pergunta salva com sucesso!" });
-                }
-                else
-                {
-                    return BadRequest(new { error = "Erro ao salvar pergunta no dataset" });
-                }
+                // Opcional: Recarregar fatos se o QuizService ainda for usado em algum lugar para exibição imediata
+                _quizService.ReloadFacts();
+
+                return new JsonResult(new { success = true, message = "Pergunta salva com sucesso para futuro treinamento!" });
             }
             catch (Exception ex)
             {
