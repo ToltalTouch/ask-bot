@@ -8,8 +8,8 @@
 @Html.AntiForgeryToken()
 
 <header class="quiz-header">
-    <h1>🤖 PERGUNTE AO BOT!</h1>
-    <p>Faça uma afirmação e o bot dirá se é verdadeiro ou falso!</p>
+    <h1>ARENA VERDADEIRO OU FALSO!</h1>
+    <p>Teste Seu Conhecimento! Derrote o Bot!</p>
 </header>
 
 <main class="chatbot-container">
@@ -37,16 +37,43 @@
         </div>
     </div>
 
+    <div class="answer-buttons">
+        <button class="btn true-btn" onclick="handleAnswer(true)">
+            <span class="check-icon">✓</span>
+            <span>VERDADEIRO</span>
+        </button>
+        <button class="btn false-btn" onclick="handleAnswer(false)">
+            <span class="cross-icon">✕</span>
+            <span>FALSO</span>
+        </button>
+    </div>
+
     <div class="footer-area">
-        <div class="input-area-askbot">
-            <input type="text" id="userQuestion" placeholder="Ex: A Torre Eiffel fica em Paris" autofocus>
-            <button class="send-btn" id="askButton" onclick="askBot()">
-                <span id="buttonText">Perguntar</span>
-                <span id="buttonSpinner" style="display: none;">⏳</span>
-            </button>
-        </div>
-        <div class="examples">
-            <small>💡 Exemplos: "A Terra é redonda", "Os vikings usavam capacetes com chifres"</small>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-label">🏆 PONTOS</div>
+                <div class="stat-value" id="scoreValue">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">✅ ACERTOS</div>
+                <div class="stat-value" id="accuracyValue">0/0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">🔥 COMBO</div>
+                <div class="stat-value" id="streakValue">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">⚡ MULT.</div>
+                <div class="stat-value" id="multiplierValue">1.0x</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">⏱️ TEMPO</div>
+                <div class="stat-value" id="timerValue">0:00</div>
+            </div>
+            <div class="stat-item stat-level">
+                <div class="stat-label">🏆 NÍVEL</div>
+                <div class="stat-value" id="levelValue">Iniciante</div>
+            </div>
         </div>
     </div>
 </main>
@@ -410,12 +437,25 @@
         chatArea.scrollTop = chatArea.scrollHeight;
     }
 
-    // Permitir enviar com Enter
+    // Função para lidar com os botões Verdadeiro / Falso (apenas UI)
+    function handleAnswer(isTrue) {
+        const text = isTrue ? 'Verdadeiro' : 'Falso';
+        addUserMessage(text);
+        // Pequena resposta de placeholder para manter a interface responsiva
+        setTimeout(() => {
+            addBotMessage(isTrue ? '✅ CORRETO!' : '❌ INCORRETO!');
+        }, 600);
+    }
+
+    // Permitir enviar com Enter (se existir campo de texto)
     document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('userQuestion').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                askBot();
-            }
-        });
+        const input = document.getElementById('userQuestion');
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    askBot();
+                }
+            });
+        }
     });
 </script>

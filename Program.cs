@@ -1,4 +1,3 @@
-using Microsoft.Extensions.ML;
 using Microsoft.ML;
 using ML_2025.Models;
 using ML_2025.Services;
@@ -22,10 +21,13 @@ var pastaModelos = Path.Combine(AppContext.BaseDirectory, "MLModels");
 if (!File.Exists(Path.Combine(pastaModelos, "model.zip")))
     ModelBuilder.Treinar(pastaModelos);
 
+var mlContext = new MLContext();
 var modelPath = Path.Combine(pastaModelos, "model.zip");
+var model = mlContext.Model.Load(modelPath, out _);
+var engine = mlContext.Model.CreatePredictionEngine<SentimentData, SentimentPrediction>(model);
 
-builder.Services.AddPredictionEnginePool<SentimentData, SentimentPrediction>()
-    .FromFile(modelName: "SentimentAnalysisModel", filePath: modelPath, watchForChanges: true);
+
+builder.Services.AddSingleton(engine);
 
 var app = builder.Build();
 
@@ -41,9 +43,9 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapRazorPages(); 
 
-app.MapPost("/predict", (PredictRequest request, TriviaService triviaService) =>
+app.MapPost("/predict", (PredictRequest request, PredictionEngine<SentimentData, SentimentPrediction> engine) =>
 {
-    var prediction = triviaService.Predict(request);
+    var prediction = engine.Predict(new SentimentData { Text = request.Text });
     return Results.Ok(prediction);
 });
 

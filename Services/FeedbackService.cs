@@ -75,14 +75,11 @@ namespace ML_2025.Services
 
         private string ConvertToCsvLine(FeedbackData feedback)
         {
-            // Usar ponto como separador decimal em vez de vírgula
-            var confidenceStr = feedback.Confidence.ToString("F2", CultureInfo.InvariantCulture);
-            
             return $"{EscapeCsvField(feedback.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"))}," +
                    $"{EscapeCsvField(feedback.Question)}," +
                    $"{feedback.Answer}," +
                    $"{EscapeCsvField(feedback.Curiosity)}," +
-                   $"{confidenceStr}," +
+                   $"{feedback.Confidence:F2}," +
                    $"{EscapeCsvField(feedback.Source)}," +
                    $"{(feedback.IsUseful?.ToString() ?? "null")}," +
                    $"{EscapeCsvField(feedback.UserFeedbackComment)}";
@@ -128,28 +125,20 @@ namespace ML_2025.Services
                     // Pular cabeçalho
                     for (int i = 1; i < lines.Length; i++)
                     {
-                        try
+                        var parts = ParseCsvLine(lines[i]);
+                        if (parts.Length >= 7)
                         {
-                            var parts = ParseCsvLine(lines[i]);
-                            if (parts.Length >= 7)
+                            feedbackList.Add(new FeedbackData
                             {
-                                feedbackList.Add(new FeedbackData
-                                {
-                                    Timestamp = DateTime.Parse(parts[0]),
-                                    Question = parts[1],
-                                    Answer = bool.Parse(parts[2]),
-                                    Curiosity = parts[3],
-                                    Confidence = double.Parse(parts[4], CultureInfo.InvariantCulture),
-                                    Source = parts[5],
-                                    IsUseful = parts[6] == "null" ? null : bool.Parse(parts[6]),
-                                    UserFeedbackComment = parts.Length > 7 ? parts[7] : string.Empty
-                                });
-                            }
-                        }
-                        catch (Exception lineEx)
-                        {
-                            Console.WriteLine($"Erro ao processar linha {i}: {lineEx.Message}");
-                            // Continua processando as outras linhas
+                                Timestamp = DateTime.Parse(parts[0]),
+                                Question = parts[1],
+                                Answer = bool.Parse(parts[2]),
+                                Curiosity = parts[3],
+                                Confidence = double.Parse(parts[4]),
+                                Source = parts[5],
+                                IsUseful = parts[6] == "null" ? null : bool.Parse(parts[6]),
+                                UserFeedbackComment = parts.Length > 7 ? parts[7] : string.Empty
+                            });
                         }
                     }
                 }

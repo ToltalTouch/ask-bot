@@ -1,4 +1,3 @@
-using Microsoft.Extensions.ML;
 using ML_2025.Models;
 using Newtonsoft.Json;
 using System.Text;
@@ -10,7 +9,7 @@ namespace ML_2025.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IWebHostEnvironment _env;
-        private readonly PredictionEnginePool<SentimentData, SentimentPrediction> _predictionEnginePool;
+        private readonly string _datasetPath;
 
         // Dicionário de tradução de categorias
         private readonly Dictionary<string, string> _categoryTranslations = new Dictionary<string, string>
@@ -36,23 +35,11 @@ namespace ML_2025.Services
             { "Vehicles", "Veículos" }
         };
 
-        public TriviaService(HttpClient httpClient, IWebHostEnvironment env, PredictionEnginePool<SentimentData, SentimentPrediction> predictionEnginePool)
+        public TriviaService(HttpClient httpClient, IWebHostEnvironment env)
         {
             _httpClient = httpClient;
             _env = env;
-            _predictionEnginePool = predictionEnginePool;
-        }
-
-        public PredictionResponse Predict(PredictRequest request)
-        {
-            var sentimentData = new SentimentData { Text = request.Text };
-            var prediction = _predictionEnginePool.Predict(modelName: "SentimentAnalysisModel", example: sentimentData);
-
-            return new PredictionResponse
-            {
-                Prediction = prediction.PredictedLabel,
-                Score = prediction.Score
-            };
+            _datasetPath = Path.Combine(_env.WebRootPath, "data", "dataset_fatos_historicos_3000.csv");
         }
 
         public async Task<List<TriviaQuestion>> GetTriviaBooleanQuestions(int amount = 10, string? category = null, string? difficulty = null)
@@ -179,6 +166,41 @@ namespace ML_2025.Services
                 "hard" => "Difícil",
                 _ => difficulty
             };
+        }
+
+        public bool SaveToDataset(TriviaQuestion question)
+        {
+            try
+            {
+                var isTrue = question.CorrectAnswer.Equals("True", StringComparison.OrdinalIgnoreCase);
+                var line = $"\"{question.QuestionPt}\",\"{(isTrue ? "Verdadeiro" : "Falso")}\",\"{question.Curiosidade}\"";
+
+                // Ler o arquivo existente para pegar o próximo ID
+                var lines = File.ReadAllLines(_datasetPath);
+                var lastId = 0;
+                if (lines.Length > 1)
+                {
+                    var lastLine = lines[lines.Length - 1];
+                    var firstComma = lastLine.IndexOf(',');
+                    if (firstComma > 0 && int.TryParse(lastLine.Substring(0, firstComma), out var id))
+                    {
+                        lastId = id;
+                    }
+                }
+
+                var newId = lastId + 1;
+                var newLine = $"\n{newId},{line}";
+
+                File.AppendAllText(_datasetPath, newLine, Encoding.UTF8);
+                
+                Console.WriteLine($"Pergunta salva no dataset com ID {newId}");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao salvar no dataset: {ex.Message}");
+                return false;
+            }
         }
 
         public Dictionary<string, string> GetCategories()
