@@ -8,8 +8,8 @@
 @Html.AntiForgeryToken()
 
 <header class="quiz-header">
-    <h1>ARENA VERDADEIRO OU FALSO!</h1>
-    <p>Teste Seu Conhecimento! Derrote o Bot!</p>
+    <h1>🤖 PERGUNTE AO BOT!</h1>
+    <p>Faça uma afirmação e o bot dirá se é verdadeiro ou falso!</p>
 </header>
 
 <main class="chatbot-container">
@@ -37,43 +37,16 @@
         </div>
     </div>
 
-    <div class="answer-buttons">
-        <button class="btn true-btn" onclick="handleAnswer(true)">
-            <span class="check-icon">✓</span>
-            <span>VERDADEIRO</span>
-        </button>
-        <button class="btn false-btn" onclick="handleAnswer(false)">
-            <span class="cross-icon">✕</span>
-            <span>FALSO</span>
-        </button>
-    </div>
-
     <div class="footer-area">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-label">🏆 PONTOS</div>
-                <div class="stat-value" id="scoreValue">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">✅ ACERTOS</div>
-                <div class="stat-value" id="accuracyValue">0/0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">🔥 COMBO</div>
-                <div class="stat-value" id="streakValue">0</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">⚡ MULT.</div>
-                <div class="stat-value" id="multiplierValue">1.0x</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-label">⏱️ TEMPO</div>
-                <div class="stat-value" id="timerValue">0:00</div>
-            </div>
-            <div class="stat-item stat-level">
-                <div class="stat-label">🏆 NÍVEL</div>
-                <div class="stat-value" id="levelValue">Iniciante</div>
-            </div>
+        <div class="input-area-askbot">
+            <input type="text" id="userQuestion" placeholder="Ex: A Torre Eiffel fica em Paris" autofocus>
+            <button class="send-btn" id="askButton" onclick="askBot()">
+                <span id="buttonText">Perguntar</span>
+                <span id="buttonSpinner" style="display: none;">⏳</span>
+            </button>
+        </div>
+        <div class="examples">
+            <small>💡 Exemplos: "A Terra é redonda", "Os vikings usavam capacetes com chifres"</small>
         </div>
     </div>
 </main>
@@ -109,6 +82,30 @@
         text-align: center;
         color: #8892a6;
         margin-top: 0.5rem;
+    }
+
+    .send-btn {
+        padding: 0.75rem 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        min-width: 120px;
+    }
+
+    .send-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    }
+
+    .send-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
     }
 
     /* Feedback Styles */
@@ -437,17 +434,7 @@
         chatArea.scrollTop = chatArea.scrollHeight;
     }
 
-    // Função para lidar com os botões Verdadeiro / Falso (apenas UI)
-    function handleAnswer(isTrue) {
-        const text = isTrue ? 'Verdadeiro' : 'Falso';
-        addUserMessage(text);
-        // Pequena resposta de placeholder para manter a interface responsiva
-        setTimeout(() => {
-            addBotMessage(isTrue ? '✅ CORRETO!' : '❌ INCORRETO!');
-        }, 600);
-    }
-
-    // Permitir enviar com Enter (se existir campo de texto)
+    // Permitir enviar com Enter
     document.addEventListener('DOMContentLoaded', function() {
         const input = document.getElementById('userQuestion');
         if (input) {

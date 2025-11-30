@@ -6,13 +6,15 @@ namespace ML_2025.Services
 {
     public class FeedbackService
     {
+        private readonly ILogger<FeedbackService> _logger;
         private readonly IWebHostEnvironment _env;
         private readonly string _allFeedbackPath;
         private readonly string _usefulFeedbackPath;
         private readonly object _lockObject = new object();
 
-        public FeedbackService(IWebHostEnvironment env)
+        public FeedbackService(IWebHostEnvironment env, ILogger<FeedbackService> logger)
         {
+            _logger = logger;
             _env = env;
             
             var feedbackFolder = Path.Combine(_env.WebRootPath, "feedback");
@@ -23,6 +25,8 @@ namespace ML_2025.Services
 
             _allFeedbackPath = Path.Combine(feedbackFolder, "all_feedback.csv");
             _usefulFeedbackPath = Path.Combine(feedbackFolder, "useful_feedback.csv");
+
+            _logger.LogInformation("FeedbackService inicializado. Pasta de feedback: {FeedbackFolder}", feedbackFolder);
 
             // Criar arquivos com cabeçalho se não existirem
             InitializeCsvFiles();
@@ -35,11 +39,13 @@ namespace ML_2025.Services
                 if (!File.Exists(_allFeedbackPath))
                 {
                     File.WriteAllText(_allFeedbackPath, GetCsvHeader(), Encoding.UTF8);
+                    _logger.LogInformation("Arquivo all_feedback.csv criado: {Path}", _allFeedbackPath);
                 }
 
                 if (!File.Exists(_usefulFeedbackPath))
                 {
                     File.WriteAllText(_usefulFeedbackPath, GetCsvHeader(), Encoding.UTF8);
+                    _logger.LogInformation("Arquivo useful_feedback.csv criado: {Path}", _usefulFeedbackPath);
                 }
             }
         }
@@ -51,6 +57,9 @@ namespace ML_2025.Services
 
         public void SaveFeedback(FeedbackData feedback)
         {
+            _logger.LogInformation("Salvando feedback. Pergunta: {Question}, Útil: {IsUseful}, Fonte: {Source}", 
+                feedback.Question, feedback.IsUseful, feedback.Source);
+            
             lock (_lockObject)
             {
                 try
@@ -64,11 +73,12 @@ namespace ML_2025.Services
                     if (feedback.IsUseful == true)
                     {
                         File.AppendAllText(_usefulFeedbackPath, csvLine + "\n", Encoding.UTF8);
+                        _logger.LogInformation("Feedback útil salvo também em useful_feedback.csv");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Erro ao salvar feedback: {ex.Message}");
+                    _logger.LogError(ex, "Erro ao salvar feedback no arquivo CSV. Pergunta: {Question}", feedback.Question);
                 }
             }
         }
@@ -144,7 +154,7 @@ namespace ML_2025.Services
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Erro ao ler feedback: {ex.Message}");
+                    _logger.LogError(ex, "Erro ao ler feedback do arquivo: {FilePath}", filePath);
                 }
             }
 

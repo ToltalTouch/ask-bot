@@ -1,2 +1,7 @@
 ﻿Timestamp,Question,Answer,Curiosity,Confidence,Source,IsUseful,UserFeedbackComment
 "2025-11-18 09:23:19","rio de janeiro é a capital do brasil",True,"Não encontrei essa informação no meu banco de dados. Esta é uma análise baseada em padrões!",0,50,"ml",null,""
+"2025-11-30 15:45:17","A terra é redonda?",True,"Não encontrei essa informação no meu banco de dados. Esta é uma análise baseada em padrões!",0,95,"ml",null,""
+"2025-11-30 15:48:05","a terra é plana?",False,"A esfericidade é comprovada há milênios.",1,00,"dataset",null,""
+"2025-11-30 15:48:05","a terra é plana?",False,"A esfericidade é comprovada há milênios.",1,00,"dataset",True,""
+"2025-11-30 15:48:05","a terra é plana?",False,"A esfericidade é comprovada há milênios.",1,00,"dataset",True,""
+"2025-11-30 15:49:30","A Idade Média foi completamente sem avanços científicos.",False,"Houve progresso em óptica, matemática e engenharia.",1,00,"dataset",null,""

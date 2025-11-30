@@ -35,9 +35,16 @@ const LEVELS = [
 
 let currentLevel = LEVELS[0];
 
-// Initialize game on page load
+// Initialize game on page load - only if game elements exist
 document.addEventListener('DOMContentLoaded', function() {
-    startGame();
+    // Verificar se é a página do jogo (tem os elementos do jogo)
+    const hasGameElements = document.getElementById('scoreValue') && 
+                           document.querySelector('.answer-buttons') &&
+                           document.querySelector('.true-btn');
+    
+    if (hasGameElements) {
+        startGame();
+    }
 });
 
 async function startGame() {

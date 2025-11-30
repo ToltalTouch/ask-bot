@@ -19,11 +19,13 @@ public class FeedbackRequest
 [IgnoreAntiforgeryToken]
 public class AskBotModel : PageModel
 {
+    private readonly ILogger<AskBotModel> _logger;
     private readonly QuizService _quizService;
     private readonly FeedbackService _feedbackService;
 
-    public AskBotModel(QuizService quizService, FeedbackService feedbackService)
+    public AskBotModel(QuizService quizService, FeedbackService feedbackService, ILogger<AskBotModel> logger)
     {
+        _logger = logger;
         _quizService = quizService;
         _feedbackService = feedbackService;
     }
@@ -34,10 +36,13 @@ public class AskBotModel : PageModel
 
     public IActionResult OnGetAsk(string question)
     {
+        _logger.LogInformation("[REQUISIÇÃO] Nova pergunta recebida: {Question}", question);
+        
         try
         {
             if (string.IsNullOrWhiteSpace(question))
             {
+                _logger.LogWarning("[REQUISIÇÃO] Pergunta vazia recebida");
                 return new JsonResult(new { error = "Pergunta vazia" }) { StatusCode = 400 };
             }
 
@@ -56,6 +61,7 @@ public class AskBotModel : PageModel
                 curiosity = result.Curiosidade;
                 confidence = 1.0;
                 source = "dataset";
+                _logger.LogInformation("[RESPOSTA] Fonte: DATASET | Resposta: {Answer} | Confiança: {Confidence:F2}", answer, confidence);
             }
             else
             {
@@ -63,6 +69,7 @@ public class AskBotModel : PageModel
                 (answer, confidence) = AnalyzeQuestionWithHeuristics(question);
                 curiosity = "Não encontrei essa informação no meu banco de dados. Esta é uma análise baseada em padrões!";
                 source = "ml";
+                _logger.LogInformation("[RESPOSTA] Fonte: ML/HEURÍSTICA | Resposta: {Answer} | Confiança: {Confidence:F2}", answer, confidence);
             }
 
             // Salvar a requisição em all_feedback.csv (sem feedback ainda)
@@ -78,6 +85,8 @@ public class AskBotModel : PageModel
             };
 
             _feedbackService.SaveFeedback(feedbackData);
+            
+            _logger.LogInformation("[REQUISIÇÃO] Resposta enviada com sucesso. Timestamp: {Timestamp}", feedbackData.Timestamp);
 
             return new JsonResult(new
             {
@@ -96,13 +105,14 @@ public class AskBotModel : PageModel
 
     public IActionResult OnPostFeedback([FromBody] FeedbackRequest request)
     {
+        _logger.LogInformation("[FEEDBACK] Requisição de feedback recebida. Pergunta: {Question}", request?.Question);
+        
         try
         {
-            Console.WriteLine($"Recebendo feedback: {request?.Question}");
             
             if (request == null || string.IsNullOrWhiteSpace(request.Question))
             {
-                Console.WriteLine("Erro: Dados inválidos");
+                _logger.LogWarning("[FEEDBACK] Dados inválidos recebidos na requisição de feedback");
                 return new JsonResult(new { success = false, error = "Dados inválidos" }) { StatusCode = 400 };
             }
 
@@ -120,13 +130,14 @@ public class AskBotModel : PageModel
             };
 
             _feedbackService.SaveFeedback(feedbackData);
-            Console.WriteLine($"Feedback salvo com sucesso! Útil: {request.IsUseful}");
+            _logger.LogInformation("[FEEDBACK] Feedback salvo com sucesso! Útil: {IsUseful}, Pergunta: {Question}", 
+                request.IsUseful, request.Question);
 
             return new JsonResult(new { success = true, message = "Feedback registrado com sucesso!" });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erro ao salvar feedback: {ex.Message}");
+            _logger.LogError(ex, "[FEEDBACK] Erro ao processar feedback. Pergunta: {Question}", request?.Question);
             return new JsonResult(new { success = false, error = ex.Message }) { StatusCode = 500 };
         }
     }

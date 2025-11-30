@@ -5,13 +5,16 @@ namespace ML_2025.Services
 {
     public class QuizService
     {
+        private readonly ILogger<QuizService> _logger;
         private readonly IWebHostEnvironment _env;
         private List<HistoricalFact> _facts = new List<HistoricalFact>();
         private readonly Random _random = new Random();
 
-        public QuizService(IWebHostEnvironment env)
+        public QuizService(IWebHostEnvironment env, ILogger<QuizService> logger)
         {
+            _logger = logger;
             _env = env;
+            _logger.LogInformation("Inicializando QuizService");
             LoadFacts();
         }
 
@@ -20,8 +23,11 @@ namespace ML_2025.Services
             _facts = new List<HistoricalFact>();
             var filePath = Path.Combine(_env.WebRootPath, "data", "dataset_fatos_historicos_3000.csv");
 
+            _logger.LogInformation("Carregando dataset de: {FilePath}", filePath);
+
             if (!File.Exists(filePath))
             {
+                _logger.LogError("Arquivo CSV não encontrado: {FilePath}", filePath);
                 throw new FileNotFoundException($"Arquivo CSV não encontrado: {filePath}");
             }
 
@@ -50,10 +56,11 @@ namespace ML_2025.Services
                 }
                 catch (Exception ex)
                 {
-                    // Log error but continue processing
-                    Console.WriteLine($"Erro ao processar linha {i}: {ex.Message}");
+                    _logger.LogWarning(ex, "Erro ao processar linha {LineNumber} do dataset", i);
                 }
             }
+            
+            _logger.LogInformation("Dataset carregado com sucesso. Total de fatos históricos: {Count}", _facts.Count);
         }
 
         private string[] ParseCsvLine(string line)
@@ -119,6 +126,8 @@ namespace ML_2025.Services
 
         public HistoricalFact? SearchFactByQuestion(string question)
         {
+            _logger.LogInformation("Buscando fato histórico para pergunta: {Question}", question);
+            
             if (_facts == null || _facts.Count == 0 || string.IsNullOrWhiteSpace(question))
             {
                 return null;
@@ -131,7 +140,10 @@ namespace ML_2025.Services
                 NormalizeText(f.FatoHistorico).Equals(normalizedQuestion, StringComparison.OrdinalIgnoreCase));
 
             if (exactMatch != null)
+            {
+                _logger.LogInformation("Fato encontrado no dataset (match exato). Resposta: {Answer}", exactMatch.Verdadeiro);
                 return exactMatch;
+            }
 
             // Busca por similaridade (contém)
             var similarMatch = _facts.FirstOrDefault(f =>
@@ -152,6 +164,16 @@ namespace ML_2025.Services
                 .Where(x => x.Score > 0.5)
                 .OrderByDescending(x => x.Score)
                 .FirstOrDefault();
+
+            if (bestMatch != null)
+            {
+                _logger.LogInformation("Fato encontrado no dataset (similaridade). Score: {Score:F2}, Resposta: {Answer}", 
+                    bestMatch.Score, bestMatch.Fact.Verdadeiro);
+            }
+            else
+            {
+                _logger.LogInformation("Nenhum fato encontrado no dataset com similaridade suficiente");
+            }
 
             return bestMatch?.Fact;
         }

@@ -7,6 +7,7 @@ namespace ML_2025.Services
 {
     public class TriviaService
     {
+        private readonly ILogger<TriviaService> _logger;
         private readonly HttpClient _httpClient;
         private readonly IWebHostEnvironment _env;
         private readonly string _datasetPath;
@@ -35,15 +36,20 @@ namespace ML_2025.Services
             { "Vehicles", "Veículos" }
         };
 
-        public TriviaService(HttpClient httpClient, IWebHostEnvironment env)
+        public TriviaService(HttpClient httpClient, IWebHostEnvironment env, ILogger<TriviaService> logger)
         {
+            _logger = logger;
             _httpClient = httpClient;
             _env = env;
             _datasetPath = Path.Combine(_env.WebRootPath, "data", "dataset_fatos_historicos_3000.csv");
+            _logger.LogInformation("TriviaService inicializado. Dataset path: {DatasetPath}", _datasetPath);
         }
 
         public async Task<List<TriviaQuestion>> GetTriviaBooleanQuestions(int amount = 10, string? category = null, string? difficulty = null)
         {
+            _logger.LogInformation("Buscando {Amount} perguntas da API. Categoria: {Category}, Dificuldade: {Difficulty}", 
+                amount, category ?? "Todas", difficulty ?? "Todas");
+            
             try
             {
                 // API da Open Trivia Database
@@ -88,11 +94,12 @@ namespace ML_2025.Services
                     questions.Add(question);
                 }
 
+                _logger.LogInformation("API retornou {Count} perguntas com sucesso", questions.Count);
                 return questions;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao buscar perguntas da API: {ex.Message}");
+                _logger.LogError(ex, "Erro ao buscar perguntas da API de trivia");
                 return new List<TriviaQuestion>();
             }
         }
